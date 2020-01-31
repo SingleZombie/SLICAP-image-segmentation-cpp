@@ -19,18 +19,15 @@ namespace SLICAP
 		SuperPixels superPixels(_image);
 		
 		initSuperPixelsCenter(superPixels);
-		puts("init super pixel center over");
 		{
 			auto sumArray = std::shared_ptr<int>(new int[_superPixelCount * 6]);
 			for (int i = 0; i < _maxIterTime; i++)
 			{
 				updateEachPixel(superPixels, sumArray);
-				printf("finish iteration%d\n", i);
 			}
 		}
 
 		enforceConnectivity(superPixels);
-		printf("Enforce connectivity over\n");
 
 		return superPixels;
 	}
@@ -106,37 +103,41 @@ namespace SLICAP
 	void SuperPixelsGenerator::updateEachPixel(SuperPixels& superPixels, std::shared_ptr<int> sumArray)
 	{
 		memset(sumArray.get(), 0, sizeof(int) * 6 * _superPixelCount);
-		int cIndex = 0;
 		
+		for (int tagIndex = 0; tagIndex < _superPixelCount; tagIndex++)
+		{
+			int i = superPixels.superPixelInfo[tagIndex].i, j = superPixels.superPixelInfo[tagIndex].j;
+			int cIndex = getIndexFromPos(i, j, _image.cols);
+			int i0 = std::max(i - _expectedDis, 0), i1 = std::min(i + _expectedDis, _image.rows - 1);
+			int j0 = std::max(j - _expectedDis, 0), j1 = std::min(j + _expectedDis, _image.cols - 1);
+
+			for (int vi = i0; vi <= i1; vi++)
+			{
+				for (int vj = j0; vj <= j1; vj++)
+				{
+					int vIndex = getIndexFromPos(vi, vj, _image.cols);
+					if (superPixels.tag[vIndex] != superPixels.tag[cIndex])
+					{
+						int cDistance = get5dDistance(
+							superPixels.superPixelInfo[tagIndex].getColor() - cv::Vec3i(_image.at<cv::Vec3b>(vi, vj)),
+							superPixels.superPixelInfo[tagIndex].getPos() - cv::Vec2i(vi, vj));
+						int vDistance = get5dDistance(
+							superPixels.getSuperPixelInfoOfPixel(vIndex).getColor() - cv::Vec3i(_image.at<cv::Vec3b>(vi, vj)),
+							superPixels.getSuperPixelInfoOfPixel(vIndex).getPos() - cv::Vec2i(vi, vj));
+						if (vDistance > cDistance)
+						{
+							superPixels.tag[vIndex] = tagIndex;
+						}
+					}
+				}
+			}
+		}
+
+		int cIndex = 0;
 		for (int i = 0; i < _image.rows; i++)
 		{
 			for (int j = 0; j < _image.cols; j++, cIndex++)
 			{
-				int i0 = std::max(i - _expectedDis, 0), i1 = std::min(i + _expectedDis, _image.rows - 1);
-				int j0 = std::max(j - _expectedDis, 0), j1 = std::min(j + _expectedDis, _image.cols - 1);
-				int cDistance = get5dDistance(
-					superPixels.getSuperPixelInfoOfPixel(cIndex).getColor() - cv::Vec3i(_image.at<cv::Vec3b>(i, j)),
-					superPixels.getSuperPixelInfoOfPixel(cIndex).getPos() - cv::Vec2i(i, j));
-
-				for (int vi = i0; vi <= i1; vi++)
-				{
-					for (int vj = j0; vj <= j1; vj++)
-					{
-						int vIndex = getIndexFromPos(vi, vj, _image.cols);
-						if (superPixels.tag[vIndex] != superPixels.tag[cIndex])
-						{
-							int vDistance = get5dDistance(
-								superPixels.getSuperPixelInfoOfPixel(vIndex).getColor() - cv::Vec3i(_image.at<cv::Vec3b>(i, j)),
-								superPixels.getSuperPixelInfoOfPixel(vIndex).getPos() - cv::Vec2i(i, j));
-							if (vDistance < cDistance)
-							{
-								cDistance = vDistance;
-								superPixels.tag[cIndex] = superPixels.tag[vIndex];
-							}
-						}
-					}
-				}
-
 				int tagArrayIndex = superPixels.tag[cIndex] * 6;
 				*(sumArray.get() + tagArrayIndex + 0) += _image.at<cv::Vec3b>(i, j)[0];
 				*(sumArray.get() + tagArrayIndex + 1) += _image.at<cv::Vec3b>(i, j)[1];

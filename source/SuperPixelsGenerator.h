@@ -12,7 +12,7 @@ namespace SLICAP
 	class SuperPixelsGenerator
 	{
 	public:
-		SuperPixelsGenerator(int superPixelCountK = 500, double colorDisM = 10.0, int maxIterTime = 4);
+		SuperPixelsGenerator(int superPixelCountK = 500, double colorDisM = 10.0, int maxIterTime = 10);
 		SuperPixels generateSuperPixels(cv::Mat image);
 	private:
 		void convertToLAB();
