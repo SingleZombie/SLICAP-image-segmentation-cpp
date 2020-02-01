@@ -117,7 +117,7 @@ namespace SLICAP
 				stopTime = 0;
 			}
 		} 
-		while (stopTime < 6);
+		while (stopTime < 5 && iterTime < 200);
 		//while (iterTime++ < 30);
 
 		//printf("iterTime = %d\n", iterTime);

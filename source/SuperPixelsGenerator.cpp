@@ -16,7 +16,7 @@ namespace SLICAP
 		if (_superPixelCount == -1)
 		{
 			adaptiveSuperPixelCount = true;
-			_superPixelCount = image.cols * image.rows / 1000;
+			_superPixelCount = image.cols * image.rows / 500;
 		}
 
 		_image = image;
@@ -183,7 +183,7 @@ namespace SLICAP
 	}
 	void SuperPixelsGenerator::enforceConnectivity(SuperPixels& superPixels)
 	{
-		int expectedMinSuperPixelSize = _expectedDis * _expectedDis / 2;
+		int expectedMinSuperPixelSize = _expectedDis * _expectedDis / 4;
 
 		std::vector<int> newTag(_image.cols * _image.rows, -1);
 		int newTagCount = 0;
