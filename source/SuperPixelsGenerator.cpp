@@ -8,10 +8,17 @@ namespace SLICAP
 		_colorDisM(colorDisM),
 		_maxIterTime(maxIterTime)
 	{
-
+		
 	}
 	SuperPixels SuperPixelsGenerator::generateSuperPixels(cv::Mat image)
 	{
+		bool adaptiveSuperPixelCount = false;
+		if (_superPixelCount == -1)
+		{
+			adaptiveSuperPixelCount = true;
+			_superPixelCount = image.cols * image.rows / 1000;
+		}
+
 		_image = image;
 		_expectedDis = sqrt(_image.cols * _image.rows / _superPixelCount) + 2; // plus 2 to avoid S become too small
 
@@ -28,6 +35,11 @@ namespace SLICAP
 		}
 
 		enforceConnectivity(superPixels);
+
+		if (adaptiveSuperPixelCount)
+		{
+			_superPixelCount = -1;
+		}
 
 		return superPixels;
 	}
