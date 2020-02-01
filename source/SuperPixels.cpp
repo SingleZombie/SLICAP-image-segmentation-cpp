@@ -3,7 +3,7 @@
 
 namespace SLICAP
 {
-	SuperPixels::SuperPixels(cv::Mat image) : tag(image.cols*image.rows), _image(image)
+	SuperPixels::SuperPixels(cv::Mat img) : tag(img.cols * img.rows), image(img)
 	{
 
 	}
@@ -11,11 +11,11 @@ namespace SLICAP
 	cv::Mat SuperPixels::getVisibleSegmentedImage()
 	{
 		cv::Mat res;
-		_image.copyTo(res);
+		image.copyTo(res);
 		int cIndex = 0;
-		for (int i = 0; i < _image.rows; i++)
+		for (int i = 0; i < image.rows; i++)
 		{
-			for (int j = 0; j < _image.cols; j++, cIndex++)
+			for (int j = 0; j < image.cols; j++, cIndex++)
 			{
 				bool same = true;
 				int cTag = tag[cIndex];
@@ -23,7 +23,7 @@ namespace SLICAP
 				{
 					int vi = i + neighbourX[d];
 					int vj = j + neighbourY[d];
-					if (validPos(vi, vj, _image.cols, _image.rows) && tag[getIndexFromPos(vi, vj, _image.cols)] != cTag)
+					if (validPos(vi, vj, image.cols, image.rows) && tag[getIndexFromPos(vi, vj, image.cols)] != cTag)
 					{
 						same = false;
 						break;

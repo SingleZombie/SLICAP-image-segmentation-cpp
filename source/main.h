@@ -6,5 +6,6 @@
 #include <opencv2/highgui/highgui.hpp>  
 #include "SuperPixelsGenerator.h"
 #include "SuperPixelClusteringAlgorithm.h"
+#include "ClusteringResultDisplay.h"
 
 #endif

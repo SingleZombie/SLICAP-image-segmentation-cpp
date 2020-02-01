@@ -25,6 +25,10 @@ int main(int argc, char* argv[])
 	cv::imshow("superpixels", outMat);
 	cv::imwrite("superpixels.jpg", outMat);
 
+	outMat = SLICAP::getClusteringResult(superPixels, superPixelTag);
+	cv::imshow("superpixelsTag", outMat);
+	cv::imwrite("superpixelsTag.jpg", outMat);
+
 	int cIndex = 0;
 	for (int i = 0; i < mat.rows; i++)
 	{

@@ -15,7 +15,7 @@ namespace SLICAP
 	class SuperPixels
 	{
 	public:
-		SuperPixels(cv::Mat image);
+		SuperPixels(cv::Mat img);
 
 		cv::Mat getVisibleSegmentedImage();
 
@@ -26,8 +26,9 @@ namespace SLICAP
 
 		std::vector<int> tag;
 		std::vector<SuperPixel> superPixelInfo;
+		cv::Mat image;
 	private:
-		cv::Mat _image;
+		
 		
 	};
 }
